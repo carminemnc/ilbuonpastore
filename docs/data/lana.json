@@ -1,0 +1,78 @@
+[
+  {
+    "nome": "Filato grosso",
+    "badge": "naturale",
+    "badge_en": "natural",
+    "desc": "Gomitolo di lana grezza, non tinta, nel suo colore naturale. Filata a mano dalle nostre pecore, conserva tutta la morbidezza e il calore della fibra originale.",
+    "desc_en": "Raw, undyed wool ball in its natural colour. Hand-spun from our sheep, it retains all the softness and warmth of the original fibre.",
+    "img": "assets/imgs/prodotti/lana/filato-grosso.webp",
+    "hasSlideshow": false,
+    "hasColori": false,
+    "colori": [],
+    "grammature": ["20g", "Circa 100g"],
+    "prezzi": { "20g": 3.00, "Circa 100g": 12.00 },
+    "disponibilita": "Tutto l'anno",
+    "disponibilita_en": "Year-round",
+    "disponibile": true
+  },
+  {
+    "nome": "Filato grosso colorato",
+    "badge": "tinto naturale",
+    "badge_en": "naturally dyed",
+    "desc": "Gomitolo tinto con pigmenti naturali ricavati da piante e radici del territorio. Ogni colore racconta un pezzo della nostra terra: l'ocra dell'argilla, il verde del mirto, il marrone delle castagne.",
+    "desc_en": "Wool ball dyed with natural pigments from local plants and roots. Each colour tells a piece of our land: the ochre of clay, the green of myrtle, the brown of chestnuts.",
+    "img": "assets/imgs/prodotti/lana/filato-grosso-colorato-1.webp",
+    "hasSlideshow": true,
+    "slideshowImgs": [
+      "assets/imgs/prodotti/lana/filato-grosso-colorato-1.webp",
+      "assets/imgs/prodotti/lana/filato-grosso-colorato-2.webp",
+      "assets/imgs/prodotti/lana/filato-grosso-colorato-3.webp"
+    ],
+    "hasColori": true,
+    "colori": ["Ocra", "Verde mirto", "Marrone castagna"],
+    "colori_en": ["Ochre", "Myrtle green", "Chestnut brown"],
+    "grammature": ["20g", "100g"],
+    "prezzi": { "20g": 4.00, "100g": 15.00 },
+    "disponibilita": "Tutto l'anno",
+    "disponibilita_en": "Year-round",
+    "disponibile": true
+  },
+  {
+    "nome": "Filato sottile",
+    "badge": "naturale",
+    "badge_en": "natural",
+    "desc": "Gomitolo di lana grezza, non tinta, nel suo colore naturale. Filata a mano dalle nostre pecore, conserva tutta la morbidezza e il calore della fibra originale.",
+    "desc_en": "Raw, undyed wool ball in its natural colour. Hand-spun from our sheep, it retains all the softness and warmth of the original fibre.",
+    "img": "assets/imgs/prodotti/lana/filato-sottile.webp",
+    "hasSlideshow": false,
+    "hasColori": false,
+    "colori": [],
+    "grammature": ["20g", "100g"],
+    "prezzi": { "20g": 3.00, "100g": 12.00 },
+    "disponibilita": "Tutto l'anno",
+    "disponibilita_en": "Year-round",
+    "disponibile": true
+  },
+  {
+    "nome": "Filato sottile colorato",
+    "badge": "tinto naturale",
+    "badge_en": "naturally dyed",
+    "desc": "Gomitolo tinto con pigmenti naturali ricavati da piante e radici del territorio. Ogni colore racconta un pezzo della nostra terra: l'ocra dell'argilla, il verde del mirto, il marrone delle castagne.",
+    "desc_en": "Wool ball dyed with natural pigments from local plants and roots. Each colour tells a piece of our land: the ochre of clay, the green of myrtle, the brown of chestnuts.",
+    "img": "assets/imgs/prodotti/lana/filato-sottile-colorato-1.webp",
+    "hasSlideshow": true,
+    "slideshowImgs": [
+      "assets/imgs/prodotti/lana/filato-sottile-colorato-1.webp",
+      "assets/imgs/prodotti/lana/filato-sottile-colorato-2.webp",
+      "assets/imgs/prodotti/lana/filato-sottile-colorato-3.webp"
+    ],
+    "hasColori": true,
+    "colori": ["Ocra", "Verde mirto", "Marrone castagna"],
+    "colori_en": ["Ochre", "Myrtle green", "Chestnut brown"],
+    "grammature": ["20g", "100g"],
+    "prezzi": { "20g": 4.00, "100g": 15.00 },
+    "disponibilita": "Tutto l'anno",
+    "disponibilita_en": "Year-round",
+    "disponibile": true
+  }
+]

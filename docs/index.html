@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ══ SEO & META ══ -->
+  <title>Il Buon Pastore</title>
+  <meta name="description" content="Tradizione, territorio e passione dal 1996.">
+  <meta name="theme-color" content="#FAF7F0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://api.mymemory.translated.net;">
+
+  <!-- Open Graph per condivisione social -->
+  <meta property="og:title" content="Il Buon Pastore">
+  <meta property="og:description" content="Tradizione, territorio e passione dal 1996.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://carminemnc.github.io/ilbuonpastore/">
+  <meta property="og:image" content="https://carminemnc.github.io/ilbuonpastore/assets/imgs/og-cover.jpg">
+
+  <!-- ══ FONT & STILI ══ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐑</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       GRAIN — Texture rumore sovrapposta a tutto il sito
+       ══════════════════════════════════════════ -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ══════════════════════════════════════════
+       NAVIGAZIONE — Barra fissa in alto
+       Logo | Link desktop | Azioni (lingua, dark mode, hamburger)
+       ══════════════════════════════════════════ -->
+  <nav id="nav">
+    <!-- Logo (testo iniettato da JS tramite CONFIG.sigla) -->
+    <a href="#" class="nav-logo" id="nav-logo"></a>
+
+    <!-- Link desktop (nascosti su mobile) -->
+    <ul class="nav-links">
+      <li><a href="#timeline" data-i18n="nav.storia">Storia</a></li>
+      <li><a href="#lana" data-i18n="nav.lana">Lana</a></li>
+      <li><a href="#prodotti" data-i18n="nav.formaggi">Formaggi</a></li>
+      <li><a href="#contatti" data-i18n="nav.contatti">Contatti</a></li>
+    </ul>
+
+    <!-- Bottoni: cambio lingua, dark mode, hamburger mobile -->
+    <div class="nav-actions">
+      <button class="lang-toggle" id="lang-toggle" aria-label="Switch language">EN</button>
+      <button class="lang-toggle" id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MENU MOBILE — Overlay fullscreen (aperto da hamburger)
+       ══════════════════════════════════════════ -->
+  <div class="mobile-menu" id="mobile-menu"></div>
+
+  <main>
+
+  <!-- ══════════════════════════════════════════
+       HERO — Schermata iniziale a tutto schermo
+       Contiene: sottotitolo, titolo decorativo grande,
+       3 layer di erba SVG animata e pecore animate (iniettate da JS)
+       ══════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-inner">
+      <!-- Sottotitolo "Montefiore Conca — dal 1998" (testo da JS) -->
+      <p class="hero-label" data-i18n="hero.label"></p>
+
+      <!-- Scena animata: titolo + erba + pecore -->
+      <div class="hero-scene" id="hero-scene">
+        <!-- Titolo grande "IL BUON PASTORE" (testo da JS) -->
+        <h1 class="deco-title" id="hero-deco"></h1>
+
+        <!-- Tre layer di erba SVG generati dinamicamente da JS -->
+        <div class="grass grass--back" aria-hidden="true" id="grass-back"></div>
+        <div class="grass grass--mid" aria-hidden="true" id="grass-mid"></div>
+        <div class="grass grass--front" aria-hidden="true" id="grass-front"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       INTRO — Sezione "Chi siamo"
+       Griglia a due colonne: titolo a sinistra, testo a destra
+       ══════════════════════════════════════════ -->
+  <section id="intro" class="section-pad">
+    <div class="container">
+      <div class="intro-grid">
+        <div class="intro-text reveal">
+          <span class="label" data-i18n="intro.label">Chi siamo</span>
+          <h2 data-i18n="intro.title">Da due generazioni custodiamo l'arte del pecorino sulle colline dell'Emilia-Romagna</h2>
+        </div>
+        <div class="intro-aside reveal">
+          <p data-i18n="intro.text">Tutto ha inizio negli anni '60, quando nonno Giovanni iniziò a trasformare il latte delle sue pecore in formaggio, seguendo i ritmi della natura e le tecniche tramandate di padre in figlio. Oggi, come allora, ogni forma nasce dalla cura quotidiana del gregge, dalla scelta dei pascoli migliori e da una lavorazione interamente manuale.</p>
+        </div>
+      </div>
+      <div class="intro-photo reveal">
+        <img src="assets/imgs/family.webp" alt="Nonno Giovanni" loading="lazy" width="720" height="480">
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TIMELINE — Percorso verticale con 5 step animati
+       Ogni step ha: dot sulla linea, immagine e testo.
+       Gli step si alternano sinistra/destra (data-reveal-dir).
+       La barra dorata (.tl-progress) segue lo scroll via JS.
+       ══════════════════════════════════════════ -->
+  <section id="timeline">
+    <!-- Linea verticale con barra di progresso -->
+    <div class="tl-track" aria-hidden="true">
+      <div class="tl-line">
+        <div class="tl-progress"></div>
+      </div>
+    </div>
+
+    <!-- Step 1: Il Pascolo (immagine a sinistra) -->
+    <div class="tl-step" data-reveal-dir="left">
+      <div class="tl-dot"><div class="tl-ring"></div></div>
+      <div class="tl-content">
+        <div class="tl-img">
+          <div class="tl-slideshow">
+            <div class="tl-slides">
+              <img src="assets/imgs/pascolo/pascolo-1.webp" alt="Il Pascolo" loading="lazy" width="520" height="390" class="tl-slide active">
+              <img src="assets/imgs/pascolo/pascolo-2.webp" alt="Il Pascolo" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/pascolo/pascolo-3.webp" alt="Il Pascolo" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/pascolo/pascolo-4.webp" alt="Il Pascolo" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/pascolo/pascolo-5.webp" alt="Il Pascolo" loading="lazy" width="520" height="390" class="tl-slide">
+            </div>
+            <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
+            <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
+            <div class="slide-dots">
+              <span class="slide-dot active" data-dot="0"></span>
+              <span class="slide-dot" data-dot="1"></span>
+              <span class="slide-dot" data-dot="2"></span>
+              <span class="slide-dot" data-dot="3"></span>
+              <span class="slide-dot" data-dot="4"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tl-text">
+          <h3 data-i18n="tl.1.title">Il Pascolo</h3>
+          <p data-i18n="tl.1.text">Le nostre pecore pascolano libere tra i profumi del mirto, del timo e del cisto selvatico a oltre 800 metri sul livello del mare. È proprio questo che rende unico il nostro latte.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: La Metamorfosi (immagine a destra) -->
+    <div class="tl-step" data-reveal-dir="right">
+      <div class="tl-dot"><div class="tl-ring"></div></div>
+      <div class="tl-content tl-content--reverse">
+        <div class="tl-img">
+          <div class="tl-slideshow">
+            <div class="tl-slides">
+              <img src="assets/imgs/metamorfosi/metamorfosi-1.webp" alt="La Metamorfosi" loading="lazy" width="520" height="390" class="tl-slide active">
+              <img src="assets/imgs/metamorfosi/metamorfosi-2.webp" alt="La Metamorfosi" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/metamorfosi/metamorfosi-3.webp" alt="La Metamorfosi" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/metamorfosi/metamorfosi-4.webp" alt="La Metamorfosi" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/metamorfosi/metamorfosi-5.webp" alt="La Metamorfosi" loading="lazy" width="520" height="390" class="tl-slide">
+            </div>
+            <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
+            <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
+            <div class="slide-dots">
+              <span class="slide-dot active" data-dot="0"></span>
+              <span class="slide-dot" data-dot="1"></span>
+              <span class="slide-dot" data-dot="2"></span>
+              <span class="slide-dot" data-dot="3"></span>
+              <span class="slide-dot" data-dot="4"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tl-text">
+          <h3 data-i18n="tl.2.title">La Metamorfosi</h3>
+          <p data-i18n="tl.2.text">Il latte crudo viene scaldato e addizionato con caglio di agnello. La magia inizia: il liquido diventa solido, la materia prende forma tra le mani del casaro.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: La Stagionatura (immagine a sinistra) -->
+    <div class="tl-step" data-reveal-dir="left">
+      <div class="tl-dot"><div class="tl-ring"></div></div>
+      <div class="tl-content">
+        <div class="tl-img">
+          <div class="tl-slideshow">
+            <div class="tl-slides">
+              <img src="assets/imgs/stagionatura/stagionatura-1.webp" alt="La Stagionatura" loading="lazy" width="520" height="390" class="tl-slide active">
+              <img src="assets/imgs/stagionatura/stagionatura-2.webp" alt="La Stagionatura" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/stagionatura/stagionatura-3.webp" alt="La Stagionatura" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/stagionatura/stagionatura-4.webp" alt="La Stagionatura" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/stagionatura/stagionatura-5.webp" alt="La Stagionatura" loading="lazy" width="520" height="390" class="tl-slide">
+            </div>
+            <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
+            <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
+            <div class="slide-dots">
+              <span class="slide-dot active" data-dot="0"></span>
+              <span class="slide-dot" data-dot="1"></span>
+              <span class="slide-dot" data-dot="2"></span>
+              <span class="slide-dot" data-dot="3"></span>
+              <span class="slide-dot" data-dot="4"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tl-text">
+          <h3 data-i18n="tl.3.title">La Stagionatura</h3>
+          <p data-i18n="tl.3.text">Nelle nostre cantine naturali, il tempo fa il suo lavoro. Settimane, mesi — ogni giorno il formaggio evolve, matura, si perfeziona. Non abbiamo fretta.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: La Tavola (immagine a destra) -->
+    <div class="tl-step" data-reveal-dir="right">
+      <div class="tl-dot"><div class="tl-ring"></div></div>
+      <div class="tl-content tl-content--reverse">
+        <div class="tl-img">
+          <div class="tl-slideshow">
+            <div class="tl-slides">
+              <img src="assets/imgs/tavola/tavola-1.webp" alt="La Tavola" loading="lazy" width="520" height="390" class="tl-slide active">
+              <img src="assets/imgs/tavola/tavola-2.webp" alt="La Tavola" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/tavola/tavola-3.webp" alt="La Tavola" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/tavola/tavola-4.webp" alt="La Tavola" loading="lazy" width="520" height="390" class="tl-slide">
+              <img src="assets/imgs/tavola/tavola-5.webp" alt="La Tavola" loading="lazy" width="520" height="390" class="tl-slide">
+            </div>
+            <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
+            <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
+            <div class="slide-dots">
+              <span class="slide-dot active" data-dot="0"></span>
+              <span class="slide-dot" data-dot="1"></span>
+              <span class="slide-dot" data-dot="2"></span>
+              <span class="slide-dot" data-dot="3"></span>
+              <span class="slide-dot" data-dot="4"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tl-text">
+          <h3 data-i18n="tl.4.title">La Tavola</h3>
+          <p data-i18n="tl.4.text">Il viaggio si compie quando la forma viene aperta e condivisa. Ogni fetta porta con sé il profumo dei pascoli, la pazienza della stagionatura e la storia di chi l'ha creata.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       LANA — Testo a sinistra, video WebM a destra
+       ══════════════════════════════════════════ -->
+  <section id="lana" class="section-pad">
+    <div class="container lana-container">
+      <div class="lana-grid">
+        <div class="lana-text reveal">
+          <span class="label" data-i18n="lana.label">La nostra lana</span>
+          <h2 data-i18n="lana.title">Dal gregge al gomitolo,<br>con colori della terra.</h2>
+          <p class="lana-desc" data-i18n="lana.text">La lana delle nostre pecore non va sprecata. La raccogliamo, la laviamo e la filiamo a mano, tingendola con pigmenti naturali ricavati da piante e radici del territorio. Ogni gomitolo porta con sé i colori della nostra terra: l'ocra della terra, il verde del mirto, il marrone delle castagne.</p>
+          <a class="lana-wa" id="lana-wa" href="#" target="_blank" rel="noopener noreferrer">
+            <span data-icon="whatsapp"></span> <span data-i18n="lana.wa">Chiedi info sulla lana</span>
+          </a>
+        </div>
+        <div class="lana-gomitolo" aria-hidden="true">
+          <video class="lana-anim" autoplay loop muted playsinline>
+            <source src="assets/imgs/lana-animazione.webm" type="video/webm">
+            <img src="assets/imgs/lana-animazione.webp" alt="" width="220" height="320">
+          </video>
+        </div>
+      </div>
+      <div class="lana-prodotti-list" id="lana-prodotti-list"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       PRODOTTI — Lista dei 12 formaggi
+       Le card vengono generate dinamicamente da JS
+       a partire dall'array PRODOTTI in main.js
+       ══════════════════════════════════════════ -->
+  <section id="prodotti" class="section-pad">
+    <div class="container prodotti-container">
+      <div class="prodotti-grid">
+        <div class="prodotti-text reveal">
+          <span class="label" data-i18n="prod.label">I nostri formaggi</span>
+          <h2 data-i18n="prod.title">Quattordici caratteri,<br>un'unica anima.</h2>
+          <p class="prodotti-desc" data-i18n="prod.text">Ogni formaggio nasce da un gesto antico e da un latte unico. Dalla ricotta fresca al grande stagionato, ogni forma racconta mesi di cura, pazienza e il carattere inconfondibile dei nostri pascoli.</p>
+        </div>
+        <div class="prodotti-forma" aria-hidden="true">
+          <video class="forma-anim" autoplay loop muted playsinline>
+            <source src="assets/imgs/formaggi-animazione.webm" type="video/webm">
+            <img src="assets/imgs/formaggi-animazione.webp" alt="" width="220" height="320">
+          </video>
+        </div>
+      </div>
+      <!-- Contenitore popolato da JS con le card prodotto -->
+      <div class="prodotti-list" id="prodotti-list"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       CONTATTI — Card email, WhatsApp, Instagram, mappa
+       Le card vengono generate da JS a partire da CONFIG
+       ══════════════════════════════════════════ -->
+  <section id="contatti" class="section-pad">
+    <div class="container">
+      <div class="contatti-header reveal">
+        <span class="label" data-i18n="contact.label">Contatti</span>
+        <h2 data-i18n="contact.title">Vieni a trovarci</h2>
+      </div>
+      <!-- Contenitore popolato da JS con le card contatto -->
+      <div class="contatti-cards" id="contatti-cards"></div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — Logo, navigazione, link social
+       Il contenuto viene generato da JS a partire da CONFIG
+       ══════════════════════════════════════════ -->
+  <footer>
+    <!-- Griglia footer: brand | nav | social (popolata da JS) -->
+    <div class="container footer-grid" id="footer-content"></div>
+    <p class="footer-copy" data-i18n="footer.copy">&copy; 2026 Il Buon Pastore — Tutti i diritti riservati</p>
+  </footer>
+
+  <!-- ══════════════════════════════════════════
+       CARRELLO — Drawer laterale (modulo rimovibile)
+       Per rimuovere: cancellare questo blocco HTML,
+       il blocco CSS /* CARRELLO */ e il blocco JS /* CARRELLO */
+       ══════════════════════════════════════════ -->
+  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <div class="cart-header">
+      <h3>Il tuo ordine</h3>
+      <button class="cart-close" id="cart-close" aria-label="Chiudi">&times;</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <p class="cart-empty">Il carrello è vuoto</p>
+    </div>
+    <div class="cart-footer" id="cart-footer">
+      <div class="cart-fields">
+        <span class="cart-fields-title">Dettagli consegna</span>
+        <input type="text" id="cart-nome" class="cart-input" placeholder="Nome" autocomplete="name">
+        <input type="text" id="cart-data" class="cart-input" placeholder="Data desiderata" readonly>
+        <div class="cal-drop" id="cal-drop" aria-hidden="true"></div>
+        <div class="cart-delivery-toggle" id="cart-delivery-toggle">
+          <button type="button" class="cart-del-btn active" data-delivery="pickup">Vengo a prenderlo</button>
+          <button type="button" class="cart-del-btn" data-delivery="address">Consegna a domicilio</button>
+        </div>
+        <input type="text" id="cart-indirizzo" class="cart-input cart-addr-hidden" placeholder="Indirizzo di consegna" autocomplete="street-address">
+      </div>
+      <a class="cart-send" id="cart-send" href="#" target="_blank" rel="noopener noreferrer">
+        <span data-icon="whatsapp"></span> Invia ordine su WhatsApp
+      </a>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cart-overlay"></div>
+
+  <button class="scroll-top" id="scroll-top" aria-label="Torna su">&#8593;</button>
+  <button class="cart-fab" id="cart-fab" aria-label="Carrello" aria-hidden="true">&#128722; <span class="cart-fab-badge" id="cart-fab-badge">0</span></button>
+  <div class="toast" id="toast"></div>
+
+  <!-- ══ SCRIPT PRINCIPALE (defer = eseguito dopo il parsing HTML) ══ -->
+  <script src="js/main.js" defer></script>
+</body>
+</html>
