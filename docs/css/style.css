@@ -213,6 +213,35 @@ a:hover {
   border-color: var(--oro);
 }
 
+.lang-pill {
+  display: flex;
+  border: 1px solid rgba(107, 63, 31, .2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.lang-opt {
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-b);
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .3s, color .3s;
+}
+
+.lang-opt.active {
+  background: var(--oro);
+  color: #fff;
+}
+
+.lang-opt:not(.active):hover {
+  background: rgba(200, 146, 42, .1);
+}
+
 /* ══════════════════════════════════════════════
    HERO — Schermata iniziale a tutto schermo
    ══════════════════════════════════════════════ */
@@ -267,6 +296,31 @@ a:hover {
 
 @keyframes fadeIn {
   to { opacity: 1; }
+}
+
+/* Link rapidi hero (sotto l'erba) */
+.hero-links {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 12px;
+  opacity: 0;
+  animation: fadeIn 1s ease 1s forwards;
+}
+
+.hero-link {
+  font-size: .68rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--oro);
+  transition: color .3s;
+}
+
+.hero-link:hover {
+  color: var(--marrone);
 }
 
 /* ══════════════════════════════════════════════
@@ -515,7 +569,7 @@ a:hover {
   object-fit: cover;
   opacity: 0;
   filter: saturate(.7) brightness(.95);
-  transition: filter .8s;
+  transition: opacity 2.5s ease, filter .8s;
 }
 
 .tl-slide.active {
@@ -523,28 +577,11 @@ a:hover {
   z-index: 1;
 }
 
-/* Slide uscente: wipe ondulato */
-.tl-slide.wipe-out {
-  opacity: 1;
+/* Slide uscente: fade out lento */
+.tl-slide.fade-out {
+  opacity: 0;
   z-index: 2;
-  animation: grassWipe 1.4s cubic-bezier(.4, 0, .2, 1) forwards;
-}
-
-@keyframes grassWipe {
-  0% {
-    clip-path: polygon(
-      0% 0%, 8% 0%, 15% 0%, 22% 0%, 30% 0%, 38% 0%,
-      45% 0%, 52% 0%, 60% 0%, 68% 0%, 75% 0%, 82% 0%,
-      90% 0%, 100% 0%, 100% 100%, 0% 100%
-    );
-  }
-  100% {
-    clip-path: polygon(
-      -12% 0%, -5% 12%, -9% 22%, -3% 35%, -8% 45%, -4% 55%,
-      -10% 62%, -2% 72%, -7% 80%, -4% 88%, -9% 94%, -3% 100%,
-      -6% 100%, -12% 100%, -12% 100%, -12% 100%
-    );
-  }
+  transition: opacity 2.5s ease;
 }
 
 /* Animazione clip-path: immagine si rivela da sinistra */
@@ -761,11 +798,11 @@ body.dark .slide-dot {
    PRODOTTI — Griglia dei formaggi
    ══════════════════════════════════════════════ */
 
-.prodotti-container {
+.formaggi-container {
   position: relative;
 }
 
-.prodotti-grid {
+.formaggi-grid {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: clamp(32px, 6vw, 80px);
@@ -773,26 +810,26 @@ body.dark .slide-dot {
   margin-bottom: clamp(48px, 8vw, 80px);
 }
 
-.prodotti-text h2 {
+.formaggi-text h2 {
   font-family: var(--font-t);
   font-size: clamp(1.6rem, 3.5vw, 2.6rem);
   font-weight: 400;
   line-height: 1.35;
 }
 
-.prodotti-desc {
+.formaggi-desc {
   font-size: .95rem;
   color: var(--muted);
   line-height: 1.9;
   margin-top: 20px;
 }
 
-.prodotti-list {
+.formaggi-list {
   min-height: 200px;
 }
 
 /* Forma di formaggio — animazione WebM */
-.prodotti-forma {
+.formaggi-forma {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -894,6 +931,52 @@ body.dark .slide-dot {
 }
 
 /* Box ingredienti e caratteristiche con bordo dorato */
+.prodotto-extra {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .4s var(--ease-out);
+}
+
+.prodotto-extra > .prodotto-extra-inner {
+  overflow: hidden;
+}
+
+.prodotto-extra.open {
+  grid-template-rows: 1fr;
+}
+
+.prodotto-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--oro);
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.prodotto-toggle:hover {
+  color: var(--marrone);
+}
+
+.prodotto-toggle-icon {
+  display: inline-block;
+  transition: transform .3s;
+  font-size: .85rem;
+  line-height: 1;
+}
+
+.prodotto-toggle.open .prodotto-toggle-icon {
+  transform: rotate(90deg);
+}
+
 .prodotto-details {
   display: flex;
   flex-direction: column;
@@ -1861,6 +1944,10 @@ body.dark .prodotto:last-child {
   border-bottom-color: rgba(250, 247, 240, .15);
 }
 
+body.dark .prodotto-toggle:hover {
+  color: #e2b94e;
+}
+
 /* ══════════════════════════════════════════════
    MENU MOBILE — Overlay fullscreen
    ══════════════════════════════════════════════ */
@@ -1928,12 +2015,12 @@ body.dark .prodotto:last-child {
     width: 120px;
   }
 
-  .prodotti-grid {
+  .formaggi-grid {
     grid-template-columns: 1fr;
     text-align: center;
   }
 
-  .prodotti-forma {
+  .formaggi-forma {
     order: -1;
   }
 

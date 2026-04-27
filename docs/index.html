@@ -8,7 +8,7 @@
   <title>Il Buon Pastore</title>
   <meta name="description" content="Tradizione, territorio e passione dal 1996.">
   <meta name="theme-color" content="#FAF7F0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://api.mymemory.translated.net;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self';">
 
   <!-- Open Graph per condivisione social -->
   <meta property="og:title" content="Il Buon Pastore">
@@ -43,13 +43,16 @@
     <ul class="nav-links">
       <li><a href="#timeline" data-i18n="nav.storia">Storia</a></li>
       <li><a href="#lana" data-i18n="nav.lana">Lana</a></li>
-      <li><a href="#prodotti" data-i18n="nav.formaggi">Formaggi</a></li>
+      <li><a href="#formaggi" data-i18n="nav.formaggi">Formaggi</a></li>
       <li><a href="#contatti" data-i18n="nav.contatti">Contatti</a></li>
     </ul>
 
     <!-- Bottoni: cambio lingua, dark mode, hamburger mobile -->
     <div class="nav-actions">
-      <button class="lang-toggle" id="lang-toggle" aria-label="Switch language">EN</button>
+      <div class="lang-pill" id="lang-pill" role="group" aria-label="Language">
+        <button class="lang-opt active" data-lang="it" aria-label="Italiano">ITA</button>
+        <button class="lang-opt" data-lang="en" aria-label="English">ENG</button>
+      </div>
       <button class="lang-toggle" id="dark-toggle" aria-label="Toggle dark mode">🌙</button>
       <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
@@ -58,7 +61,7 @@
   <!-- ══════════════════════════════════════════
        MENU MOBILE — Overlay fullscreen (aperto da hamburger)
        ══════════════════════════════════════════ -->
-  <div class="mobile-menu" id="mobile-menu"></div>
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu navigazione"></div>
 
   <main>
 
@@ -81,6 +84,12 @@
         <div class="grass grass--back" aria-hidden="true" id="grass-back"></div>
         <div class="grass grass--mid" aria-hidden="true" id="grass-mid"></div>
         <div class="grass grass--front" aria-hidden="true" id="grass-front"></div>
+
+        <!-- Link rapidi alle sezioni principali -->
+        <div class="hero-links">
+          <a href="#lana" class="hero-link" data-i18n="hero.lana">La nostra lana</a>
+          <a href="#formaggi" class="hero-link" data-i18n="hero.formaggi">I nostri formaggi</a>
+        </div>
       </div>
     </div>
   </section>
@@ -97,11 +106,11 @@
           <h2 data-i18n="intro.title">Da due generazioni custodiamo l'arte del pecorino sulle colline dell'Emilia-Romagna</h2>
         </div>
         <div class="intro-aside reveal">
-          <p data-i18n="intro.text">Tutto ha inizio negli anni '60, quando nonno Giovanni iniziò a trasformare il latte delle sue pecore in formaggio, seguendo i ritmi della natura e le tecniche tramandate di padre in figlio. Oggi, come allora, ogni forma nasce dalla cura quotidiana del gregge, dalla scelta dei pascoli migliori e da una lavorazione interamente manuale.</p>
+          <p data-i18n="intro.text">Tutto ha inizio negli anni '60, quando nonno Michele iniziò a trasformare il latte delle sue pecore in formaggio, seguendo i ritmi della natura e le tecniche tramandate di padre in figlio. Oggi, come allora, ogni forma nasce dalla cura quotidiana del gregge, dalla scelta dei pascoli migliori e da una lavorazione interamente manuale.</p>
         </div>
       </div>
       <div class="intro-photo reveal">
-        <img src="assets/imgs/family.webp" alt="Nonno Giovanni" loading="lazy" width="720" height="480">
+        <img src="assets/imgs/family.webp" alt="Famiglia" loading="lazy" width="720" height="480">
       </div>
     </div>
   </section>
@@ -136,11 +145,11 @@
             <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
             <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
             <div class="slide-dots">
-              <span class="slide-dot active" data-dot="0"></span>
-              <span class="slide-dot" data-dot="1"></span>
-              <span class="slide-dot" data-dot="2"></span>
-              <span class="slide-dot" data-dot="3"></span>
-              <span class="slide-dot" data-dot="4"></span>
+              <span class="slide-dot active" data-dot="0" role="button" tabindex="0" aria-label="Slide 1"></span>
+              <span class="slide-dot" data-dot="1" role="button" tabindex="0" aria-label="Slide 2"></span>
+              <span class="slide-dot" data-dot="2" role="button" tabindex="0" aria-label="Slide 3"></span>
+              <span class="slide-dot" data-dot="3" role="button" tabindex="0" aria-label="Slide 4"></span>
+              <span class="slide-dot" data-dot="4" role="button" tabindex="0" aria-label="Slide 5"></span>
             </div>
           </div>
         </div>
@@ -167,11 +176,11 @@
             <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
             <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
             <div class="slide-dots">
-              <span class="slide-dot active" data-dot="0"></span>
-              <span class="slide-dot" data-dot="1"></span>
-              <span class="slide-dot" data-dot="2"></span>
-              <span class="slide-dot" data-dot="3"></span>
-              <span class="slide-dot" data-dot="4"></span>
+              <span class="slide-dot active" data-dot="0" role="button" tabindex="0" aria-label="Slide 1"></span>
+              <span class="slide-dot" data-dot="1" role="button" tabindex="0" aria-label="Slide 2"></span>
+              <span class="slide-dot" data-dot="2" role="button" tabindex="0" aria-label="Slide 3"></span>
+              <span class="slide-dot" data-dot="3" role="button" tabindex="0" aria-label="Slide 4"></span>
+              <span class="slide-dot" data-dot="4" role="button" tabindex="0" aria-label="Slide 5"></span>
             </div>
           </div>
         </div>
@@ -198,11 +207,11 @@
             <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
             <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
             <div class="slide-dots">
-              <span class="slide-dot active" data-dot="0"></span>
-              <span class="slide-dot" data-dot="1"></span>
-              <span class="slide-dot" data-dot="2"></span>
-              <span class="slide-dot" data-dot="3"></span>
-              <span class="slide-dot" data-dot="4"></span>
+              <span class="slide-dot active" data-dot="0" role="button" tabindex="0" aria-label="Slide 1"></span>
+              <span class="slide-dot" data-dot="1" role="button" tabindex="0" aria-label="Slide 2"></span>
+              <span class="slide-dot" data-dot="2" role="button" tabindex="0" aria-label="Slide 3"></span>
+              <span class="slide-dot" data-dot="3" role="button" tabindex="0" aria-label="Slide 4"></span>
+              <span class="slide-dot" data-dot="4" role="button" tabindex="0" aria-label="Slide 5"></span>
             </div>
           </div>
         </div>
@@ -229,11 +238,11 @@
             <button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>
             <button type="button" class="slide-next" aria-label="Next">&#8250;</button>
             <div class="slide-dots">
-              <span class="slide-dot active" data-dot="0"></span>
-              <span class="slide-dot" data-dot="1"></span>
-              <span class="slide-dot" data-dot="2"></span>
-              <span class="slide-dot" data-dot="3"></span>
-              <span class="slide-dot" data-dot="4"></span>
+              <span class="slide-dot active" data-dot="0" role="button" tabindex="0" aria-label="Slide 1"></span>
+              <span class="slide-dot" data-dot="1" role="button" tabindex="0" aria-label="Slide 2"></span>
+              <span class="slide-dot" data-dot="2" role="button" tabindex="0" aria-label="Slide 3"></span>
+              <span class="slide-dot" data-dot="3" role="button" tabindex="0" aria-label="Slide 4"></span>
+              <span class="slide-dot" data-dot="4" role="button" tabindex="0" aria-label="Slide 5"></span>
             </div>
           </div>
         </div>
@@ -275,23 +284,23 @@
        Le card vengono generate dinamicamente da JS
        a partire dall'array PRODOTTI in main.js
        ══════════════════════════════════════════ -->
-  <section id="prodotti" class="section-pad">
-    <div class="container prodotti-container">
-      <div class="prodotti-grid">
-        <div class="prodotti-text reveal">
+  <section id="formaggi" class="section-pad">
+    <div class="container formaggi-container">
+      <div class="formaggi-grid">
+        <div class="formaggi-text reveal">
           <span class="label" data-i18n="prod.label">I nostri formaggi</span>
           <h2 data-i18n="prod.title">Quattordici caratteri,<br>un'unica anima.</h2>
-          <p class="prodotti-desc" data-i18n="prod.text">Ogni formaggio nasce da un gesto antico e da un latte unico. Dalla ricotta fresca al grande stagionato, ogni forma racconta mesi di cura, pazienza e il carattere inconfondibile dei nostri pascoli.</p>
+          <p class="formaggi-desc" data-i18n="prod.text">Ogni formaggio nasce da un gesto antico e da un latte unico. Dalla ricotta fresca al grande stagionato, ogni forma racconta mesi di cura, pazienza e il carattere inconfondibile dei nostri pascoli.</p>
         </div>
-        <div class="prodotti-forma" aria-hidden="true">
+        <div class="formaggi-forma" aria-hidden="true">
           <video class="forma-anim" autoplay loop muted playsinline>
             <source src="assets/imgs/formaggi-animazione.webm" type="video/webm">
             <img src="assets/imgs/formaggi-animazione.webp" alt="" width="220" height="320">
           </video>
         </div>
       </div>
-      <!-- Contenitore popolato da JS con le card prodotto -->
-      <div class="prodotti-list" id="prodotti-list"></div>
+      <!-- Contenitore popolato da JS con le card formaggio -->
+      <div class="formaggi-list" id="formaggi-list"></div>
     </div>
   </section>
 
@@ -327,7 +336,7 @@
        Per rimuovere: cancellare questo blocco HTML,
        il blocco CSS /* CARRELLO */ e il blocco JS /* CARRELLO */
        ══════════════════════════════════════════ -->
-  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
+  <div id="cart-drawer" class="cart-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Carrello">
     <div class="cart-header">
       <h3>Il tuo ordine</h3>
       <button class="cart-close" id="cart-close" aria-label="Chiudi">&times;</button>
@@ -338,14 +347,14 @@
     <div class="cart-footer" id="cart-footer">
       <div class="cart-fields">
         <span class="cart-fields-title">Dettagli consegna</span>
-        <input type="text" id="cart-nome" class="cart-input" placeholder="Nome" autocomplete="name">
+        <input type="text" id="cart-nome" class="cart-input" placeholder="Nome" autocomplete="name" maxlength="80">
         <input type="text" id="cart-data" class="cart-input" placeholder="Data desiderata" readonly>
         <div class="cal-drop" id="cal-drop" aria-hidden="true"></div>
         <div class="cart-delivery-toggle" id="cart-delivery-toggle">
-          <button type="button" class="cart-del-btn active" data-delivery="pickup">Vengo a prenderlo</button>
+          <button type="button" class="cart-del-btn active" data-delivery="pickup">Ritiro in sede</button>
           <button type="button" class="cart-del-btn" data-delivery="address">Consegna a domicilio</button>
         </div>
-        <input type="text" id="cart-indirizzo" class="cart-input cart-addr-hidden" placeholder="Indirizzo di consegna" autocomplete="street-address">
+        <input type="text" id="cart-indirizzo" class="cart-input cart-addr-hidden" placeholder="Indirizzo di consegna" autocomplete="street-address" maxlength="150">
       </div>
       <a class="cart-send" id="cart-send" href="#" target="_blank" rel="noopener noreferrer">
         <span data-icon="whatsapp"></span> Invia ordine su WhatsApp

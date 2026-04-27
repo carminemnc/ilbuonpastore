@@ -17,8 +17,6 @@
   /* ── COSTANTI CENTRALIZZATE ── */
   var LS_CART = 'ibp_cart';
   var LS_DARK = 'ibp_dark';
-  var LS_EN   = 'ibp_en';
-  var LS_HASH = 'ibp_h';
   var MAX_QTY = 99;
   var MAX_WA_URL_LEN = 2000;
   var MOBILE_BP = 768;
@@ -33,11 +31,14 @@
     colours:    { it: 'Colori',         en: 'Colours' },
     ingredients:{ it: 'Ingredienti',    en: 'Ingredients' },
     chars:      { it: 'Caratteristiche',en: 'Characteristics' },
+    pairings:   { it: 'Abbinamenti',    en: 'Pairings' },
     size:       { it: 'Pezzatura',      en: 'Size' },
     storage:    { it: 'Conservazione',  en: 'Storage' },
     consumption:{ it: 'Consumo',        en: 'Consumption' },
     availability:{ it: 'Disponibilit\u00e0', en: 'Availability' },
     portion:    { it: 'Porzione',       en: 'Portion' },
+    moreDetails:{ it: 'Maggiori dettagli', en: 'More details' },
+    lessDetails:{ it: 'Meno dettagli',   en: 'Less details' },
     unavail:    { it: 'Questo prodotto al momento non \u00e8 disponibile', en: 'This product is currently unavailable' }
   };
   function lbl(key){ return L[key][lang] || L[key].it; }
@@ -81,7 +82,7 @@
   mobileMenu.innerHTML =
     '<a href="#timeline" data-i18n="nav.storia">Storia</a>' +
     '<a href="#lana" data-i18n="nav.lana">Lana</a>' +
-    '<a href="#prodotti" data-i18n="nav.formaggi">Formaggi</a>' +
+    '<a href="#formaggi" data-i18n="nav.formaggi">Formaggi</a>' +
     '<a href="#contatti" data-i18n="nav.contatti">Contatti</a>';
 
   var navToggle = $('#nav-toggle');
@@ -175,7 +176,7 @@
      ─────────────────────────────────────────────────────────────────── */
   $('#footer-content').innerHTML =
     '<div><span class="footer-logo">' + esc(CONFIG.nome) + '</span><p data-i18n="footer.tagline">Pecorino artigianale<br>' + esc(CONFIG.luogo) + '</p></div>' +
-    '<div class="footer-nav"><a href="#timeline" data-i18n="nav.storia">Storia</a><a href="#lana" data-i18n="nav.lana">Lana</a><a href="#prodotti" data-i18n="nav.formaggi">Formaggi</a><a href="#contatti" data-i18n="nav.contatti">Contatti</a></div>' +
+    '<div class="footer-nav"><a href="#timeline" data-i18n="nav.storia">Storia</a><a href="#lana" data-i18n="nav.lana">Lana</a><a href="#formaggi" data-i18n="nav.formaggi">Formaggi</a><a href="#contatti" data-i18n="nav.contatti">Contatti</a></div>' +
     '<div class="footer-social">' +
       '<a href="https://wa.me/' + esc(CONFIG.whatsapp) + '" target="_blank" rel="noopener noreferrer">WhatsApp</a>' +
       '<a href="https://instagram.com/' + esc(CONFIG.instagram) + '" target="_blank" rel="noopener noreferrer">Instagram</a>' +
@@ -522,11 +523,11 @@
       idx = (n + slides.length) % slides.length;
       if(prev === idx) return;
       slides[prev].classList.remove('active');
-      slides[prev].classList.add('wipe-out');
+      slides[prev].classList.add('fade-out');
       slides[idx].classList.add('active');
       var old = slides[prev];
-      var onEnd = function(){ old.classList.remove('wipe-out'); old.removeEventListener('animationend', onEnd) };
-      old.addEventListener('animationend', onEnd);
+      var onEnd = function(){ old.classList.remove('fade-out'); old.removeEventListener('transitionend', onEnd) };
+      old.addEventListener('transitionend', onEnd);
       dots.forEach(function(d, i){ d.classList.toggle('active', i === idx) });
     }
     function auto(){ goTo(idx + 1) }
@@ -536,12 +537,24 @@
     ss.querySelector('.slide-prev').addEventListener('click', function(){ goTo(idx - 1); pauseAndResume() });
     ss.querySelector('.slide-next').addEventListener('click', function(){ goTo(idx + 1); pauseAndResume() });
     dots.forEach(function(d){ d.addEventListener('click', function(){ goTo(parseInt(d.getAttribute('data-dot'))); pauseAndResume() }) });
+    dots.forEach(function(d){ d.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); } }) });
     startAuto();
   });
 
+  /* Messaggi WhatsApp pre-compilati (bilingue) */
+  var WA_MSGS = {
+    info: { it: 'Salve, vorrei più informazioni su {prodotto}', en: 'Hello, I would like more information about {prodotto}' },
+    lana: { it: 'Salve, vorrei chiedere più informazioni sulla vostra lana.', en: 'Hello, I would like to ask for more information about your wool.' }
+  };
+  function waMsg(key, prodotto){
+    var m = WA_MSGS[key][lang] || WA_MSGS[key].it;
+    return prodotto ? m.replace('{prodotto}', prodotto) : m;
+  }
+
   /* Link WhatsApp per info lana */
   var lanaWa = $('#lana-wa');
-  if(lanaWa) lanaWa.href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent('Salve, vorrei chiedere più informazioni sulla vostra lana.');
+  function updateLanaWa(){ if(lanaWa) lanaWa.href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(waMsg('lana')); }
+  updateLanaWa();
 
   /* ── UTILITY TRADUZIONE CAMPI ── */
   function t_(p, field, l) {
@@ -555,19 +568,13 @@
 
   function buildLanaCard(p, l) {
     var avail = p.disponibile !== false;
-
-    /* Immagine o slideshow */
     var imgHtml;
     if(p.hasSlideshow && p.slideshowImgs && p.slideshowImgs.length > 1) {
-      imgHtml = '<div class="lana-slideshow">' +
-        '<div class="lana-slides">';
+      imgHtml = '<div class="lana-slideshow"><div class="lana-slides">';
       p.slideshowImgs.forEach(function(src, i){
         imgHtml += '<img src="' + esc(src) + '" alt="' + esc(p.nome) + '" loading="lazy" width="280" height="280" class="lana-slide' + (i === 0 ? ' active' : '') + '">';
       });
-      imgHtml += '</div>' +
-        '<button type="button" class="slide-prev" aria-label="Previous">&#8249;</button>' +
-        '<button type="button" class="slide-next" aria-label="Next">&#8250;</button>' +
-        '<div class="slide-dots">';
+      imgHtml += '</div><button type="button" class="slide-prev" aria-label="Previous">&#8249;</button><button type="button" class="slide-next" aria-label="Next">&#8250;</button><div class="slide-dots">';
       p.slideshowImgs.forEach(function(_, i){
         imgHtml += '<span class="slide-dot' + (i === 0 ? ' active' : '') + '" data-dot="' + i + '"></span>';
       });
@@ -576,44 +583,18 @@
       imgHtml = '<img src="' + esc(p.img) + '" alt="' + esc(p.nome) + '" loading="lazy" width="280" height="280">';
     }
 
-    var html = '<div class="prodotto-img">' + imgHtml + '</div>' +
-      '<div class="prodotto-body">' +
-        '<div class="prodotto-head"><h3>' + esc(p.nome) + '</h3><span class="prodotto-badge">' + esc(t_(p,'badge',l)) + '</span></div>' +
-        '<p class="prodotto-desc">' + esc(t_(p,'desc',l)) + '</p>';
-
-    /* Selettore colori */
+    var middle = '';
     if(avail && p.hasColori && p.colori && p.colori.length) {
       var coloriList = (l === 'en' && p.colori_en) ? p.colori_en : p.colori;
-      html += '<div class="prodotto-porzioni" data-colori="' + esc(coloriList.join(',')) + '">' +
-        '<span class="porzioni-label">' + esc(lbl('colours')) + '</span>' +
-        '<div class="porzioni-btns">';
+      middle = '<div class="prodotto-porzioni" data-colori="' + esc(coloriList.join(',')) + '">' +
+        '<span class="porzioni-label">' + esc(lbl('colours')) + '</span><div class="porzioni-btns">';
       coloriList.forEach(function(c, i){
-        html += '<button type="button" class="porzione-btn colore-btn' + (i === 0 ? ' active' : '') + '" data-colore="' + esc(c) + '">' + esc(c) + '</button>';
+        middle += '<button type="button" class="porzione-btn colore-btn' + (i === 0 ? ' active' : '') + '" data-colore="' + esc(c) + '">' + esc(c) + '</button>';
       });
-      html += '</div></div>';
+      middle += '</div></div>';
     }
 
-    /* Selettore grammatura (bottoni per il carrello) */
-    if(avail) {
-      html += '<div class="prodotto-porzioni" data-porzioni="' + esc(p.grammature.join(',')) + '">' +
-        '<span class="porzioni-label">' + esc(lbl('weight')) + '</span>' +
-        '<div class="porzioni-btns">';
-      p.grammature.forEach(function(g, i){
-        var price = p.prezzi && p.prezzi[g] ? p.prezzi[g] : 0;
-        html += '<button type="button" class="porzione-btn' + (i === 0 ? ' active' : '') + '" data-porzione="' + esc(g) + '" data-prezzo="' + price + '">' + esc(g) + (price ? ' \u2014 \u20ac' + price.toFixed(2) : '') + '</button>';
-      });
-      html += '</div></div>';
-    } else {
-      html += '<p class="prodotto-unavail">' + esc(lbl('unavail')) + '</p>';
-    }
-
-    /* Azioni */
-    html += '<div class="prodotto-actions">' +
-      '<a class="prodotto-wa" href="https://wa.me/' + esc(CONFIG.whatsapp) + '?text=' + encodeURIComponent(WA_MSG.replace('{prodotto}', p.nome)) + '" target="_blank" rel="noopener noreferrer">' +
-      '<span class="icon" data-icon="whatsapp"></span> ' + esc(lbl('askInfo')) + '</a>' +
-    '</div></div>';
-
-    return html;
+    return buildCardShell(p, l, imgHtml, middle, 'grammature', 'weight');
   }
 
   function renderLana(l) {
@@ -649,7 +630,7 @@
   }
 
   if(lanaList) {
-    lanaList.innerHTML = '<p class="prodotti-loading">Caricamento...</p>';
+    lanaList.innerHTML = '<p class="prodotti-loading">' + (lang === 'en' ? 'Loading...' : 'Caricamento...') + '</p>';
     fetch('data/lana.json')
       .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json() })
       .then(function(data){
@@ -669,34 +650,23 @@
         document.dispatchEvent(new Event('lana-ready'));
         refreshI18n();
       })
-      .catch(function(){ lanaList.textContent = 'Errore nel caricamento dei prodotti lana.' });
+      .catch(function(){ lanaList.textContent = lang === 'en' ? 'Error loading wool products.' : 'Errore nel caricamento dei prodotti lana.'; });
   }
 
-  /* Messaggio WhatsApp pre-compilato */
-  var WA_MSG = 'Salve, vorrei più informazioni su {prodotto}';
-  var loadedProdotti = null;
-
-  function buildCard(p, l) {
+  /* ── HELPER CARD CONDIVISO (formaggi + lana) ── */
+  function buildCardShell(p, l, imgHtml, middleHtml, porzioniKey, porzioniLabKey) {
     var avail = p.disponibile !== false;
-    return '<div class="prodotto-img"><img src="' + esc(p.img) + '" alt="' + esc(p.nome) + '" loading="lazy" width="280" height="280"></div>' +
+    var portions = p[porzioniKey] || ['Intero'];
+    return '<div class="prodotto-img">' + imgHtml + '</div>' +
       '<div class="prodotto-body">' +
         '<div class="prodotto-head"><h3>' + esc(p.nome) + '</h3><span class="prodotto-badge">' + esc(t_(p,'badge',l)) + '</span></div>' +
         '<p class="prodotto-desc">' + esc(t_(p,'desc',l)) + '</p>' +
-        '<div class="prodotto-details">' +
-          '<div class="prodotto-detail"><span class="detail-label">' + esc(lbl('ingredients')) + '</span><span class="detail-value">' + esc(t_(p,'ingredienti',l)) + '</span></div>' +
-          '<div class="prodotto-detail"><span class="detail-label">' + esc(lbl('chars')) + '</span><span class="detail-value">' + esc(t_(p,'caratteristiche',l)) + '</span></div>' +
-        '</div>' +
-        '<div class="prodotto-specs">' +
-          '<div class="spec"><span class="spec-label">' + esc(lbl('size')) + '</span><span class="spec-value">' + esc(t_(p,'pezzatura',l)) + '</span></div>' +
-          '<div class="spec"><span class="spec-label">' + esc(lbl('storage')) + '</span><span class="spec-value">' + esc(t_(p,'conservazione',l)) + '</span></div>' +
-          '<div class="spec"><span class="spec-label">' + esc(lbl('consumption')) + '</span><span class="spec-value">' + esc(t_(p,'consumo',l)) + '</span></div>' +
-          '<div class="spec"><span class="spec-label">' + esc(lbl('availability')) + '</span><span class="spec-value">' + esc(t_(p,'disponibilita',l)) + '</span></div>' +
-        '</div>' +
+        middleHtml +
         (avail ?
-        '<div class="prodotto-porzioni" data-porzioni="' + esc((p.porzioni || ['Intero']).join(',')) + '">' +
-          '<span class="porzioni-label">' + lbl('portion') + '</span>' +
+        '<div class="prodotto-porzioni" data-porzioni="' + esc(portions.join(',')) + '">' +
+          '<span class="porzioni-label">' + esc(lbl(porzioniLabKey)) + '</span>' +
           '<div class="porzioni-btns">' +
-          (p.porzioni || ['Intero']).map(function(pz, i){
+          portions.map(function(pz, i){
             var price = p.prezzi && p.prezzi[pz] ? p.prezzi[pz] : 0;
             return '<button type="button" class="porzione-btn' + (i === 0 ? ' active' : '') + '" data-porzione="' + esc(pz) + '" data-prezzo="' + price + '">' + esc(pz) + (price ? ' \u2014 \u20ac' + price.toFixed(2) : '') + '</button>';
           }).join('') +
@@ -704,10 +674,30 @@
         '</div>'
         : '<p class="prodotto-unavail">' + esc(lbl('unavail')) + '</p>') +
         '<div class="prodotto-actions">' +
-        '<a class="prodotto-wa" href="https://wa.me/' + esc(CONFIG.whatsapp) + '?text=' + encodeURIComponent(WA_MSG.replace('{prodotto}', p.nome)) + '" target="_blank" rel="noopener noreferrer">' +
+        '<a class="prodotto-wa" href="https://wa.me/' + esc(CONFIG.whatsapp) + '?text=' + encodeURIComponent(waMsg('info', p.nome)) + '" target="_blank" rel="noopener noreferrer">' +
         '<span class="icon" data-icon="whatsapp"></span> ' + esc(lbl('askInfo')) + '</a>' +
       '</div>' +
       '</div>';
+  }
+
+  var loadedProdotti = null;
+
+  function buildCard(p, l) {
+    var imgHtml = '<img src="' + esc(p.img) + '" alt="' + esc(p.nome) + '" loading="lazy" width="280" height="280">';
+    var middle = '<button type="button" class="prodotto-toggle">' + esc(lbl('moreDetails')) + ' <span class="prodotto-toggle-icon">&#8250;</span></button>' +
+      '<div class="prodotto-extra"><div class="prodotto-extra-inner">' +
+      '<div class="prodotto-details">' +
+        '<div class="prodotto-detail"><span class="detail-label">' + esc(lbl('ingredients')) + '</span><span class="detail-value">' + esc(t_(p,'ingredienti',l)) + '</span></div>' +
+        '<div class="prodotto-detail"><span class="detail-label">' + esc(lbl('chars')) + '</span><span class="detail-value">' + esc(t_(p,'caratteristiche',l)) + '</span></div>' +
+        (t_(p,'abbinamenti',l) ? '<div class="prodotto-detail"><span class="detail-label">' + esc(lbl('pairings')) + '</span><span class="detail-value">' + esc(t_(p,'abbinamenti',l)) + '</span></div>' : '') +
+      '</div>' +
+      '<div class="prodotto-specs">' +
+        '<div class="spec"><span class="spec-label">' + esc(lbl('size')) + '</span><span class="spec-value">' + esc(t_(p,'pezzatura',l)) + '</span></div>' +
+        '<div class="spec"><span class="spec-label">' + esc(lbl('storage')) + '</span><span class="spec-value">' + esc(t_(p,'conservazione',l)) + '</span></div>' +
+        '<div class="spec"><span class="spec-label">' + esc(lbl('consumption')) + '</span><span class="spec-value">' + esc(t_(p,'consumo',l)) + '</span></div>' +
+        '<div class="spec"><span class="spec-label">' + esc(lbl('availability')) + '</span><span class="spec-value">' + esc(t_(p,'disponibilita',l)) + '</span></div>' +
+      '</div></div></div>';
+    return buildCardShell(p, l, imgHtml, middle, 'porzioni', 'portion');
   }
 
   function renderProdotti(l) {
@@ -721,13 +711,13 @@
       card.innerHTML = buildCard(p, l);
     });
     replaceIcons(prodList);
-    document.dispatchEvent(new Event('prodotti-rerender'));
+    document.dispatchEvent(new Event('formaggi-rerender'));
   }
 
-  var prodList = $('#prodotti-list');
+  var prodList = $('#formaggi-list');
   if(prodList) {
-  prodList.innerHTML = '<p class="prodotti-loading">' + 'Caricamento...' + '</p>';
-  fetch('data/prodotti.json')
+  prodList.innerHTML = '<p class="prodotti-loading">' + (lang === 'en' ? 'Loading...' : 'Caricamento...') + '</p>';
+  fetch('data/formaggi.json')
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json() })
     .then(function(PRODOTTI){
       loadedProdotti = PRODOTTI;
@@ -742,10 +732,10 @@
       prodList.innerHTML = '';
       prodList.appendChild(frag);
       replaceIcons(prodList);
-      document.dispatchEvent(new Event('prodotti-ready'));
+      document.dispatchEvent(new Event('formaggi-ready'));
       refreshI18n();
     })
-    .catch(function(){ prodList.textContent = 'Errore nel caricamento dei prodotti.'; });
+    .catch(function(){ prodList.textContent = lang === 'en' ? 'Error loading cheeses.' : 'Errore nel caricamento dei formaggi.'; });
   }
 
   /* ── ICONE SVG ── */
@@ -777,117 +767,79 @@
   replaceIcons();
 
   /* ── INTERNAZIONALIZZAZIONE (i18n) ────────────────────────────────
-     Sistema di traduzione IT ↔ EN usando l'API MyMemory.
-     Eseguito DOPO tutto il contenuto dinamico per catturare
-     tutti gli elementi con attributo data-i18n.
-
-     Funzionamento:
-     - orig{}: salva l'HTML originale italiano di ogni chiave i18n
-     - cache{}: memorizza le traduzioni inglesi già ottenute
-     - ch: hash semplice del contenuto per invalidare la cache
-       se il testo sorgente cambia
-     - Al caricamento tenta di recuperare le traduzioni da localStorage
-
-     tr(text): traduce un testo IT→EN via API MyMemory.
-       Gestisce i <br> convertendoli in \n prima della traduzione
-       e ripristinandoli dopo.
-
-     apply(l): applica la lingua scelta a tutti gli elementi i18n.
-       Se EN e la traduzione esiste in cache, la usa; altrimenti
-       mostra l'originale italiano.
-
-     Click sul bottone lingua (#lang-toggle):
-     - Se siamo in EN → torna a IT immediatamente
-     - Se siamo in IT → traduce in batch da 5 chiavi alla volta
-       per non sovraccaricare l'API, poi salva tutto in localStorage
+     Dizionario hardcoded IT/EN per tutti gli elementi data-i18n.
+     Il bottone #lang-toggle switcha istantaneamente tra le due lingue.
      ─────────────────────────────────────────────────────────────────── */
-  var lb = $('#lang-toggle'),
-      orig = {}, cache = {},
-      i18n = [], ch = '', uniqueKeys = [];
+  var I18N = {
+    'nav.storia':    { it: 'Storia',    en: 'History' },
+    'nav.lana':      { it: 'Lana',      en: 'Wool' },
+    'nav.formaggi':  { it: 'Formaggi',  en: 'Cheeses' },
+    'nav.contatti':  { it: 'Contatti',  en: 'Contact' },
+    'hero.label':    { it: CONFIG.luogo + ' \u2014 dal ' + CONFIG.anno, en: CONFIG.luogo + ' \u2014 since ' + CONFIG.anno },
+    'hero.lana':     { it: 'La nostra lana',     en: 'Our wool' },
+    'hero.formaggi': { it: 'I nostri formaggi',   en: 'Our cheeses' },
+    'intro.label':   { it: 'Chi siamo', en: 'About us' },
+    'intro.title':   { it: "Da due generazioni custodiamo l\u2019arte del pecorino sulle colline dell\u2019Emilia-Romagna", en: 'For two generations we have been preserving the art of pecorino on the hills of Emilia-Romagna' },
+    'intro.text':    { it: "Tutto ha inizio negli anni \u201960, quando nonno Michele inizi\u00f2 a trasformare il latte delle sue pecore in formaggio, seguendo i ritmi della natura e le tecniche tramandate di padre in figlio. Oggi, come allora, ogni forma nasce dalla cura quotidiana del gregge, dalla scelta dei pascoli migliori e da una lavorazione interamente manuale.", en: "It all began in the 1960s, when grandfather Michele started turning his sheep\u2019s milk into cheese, following nature\u2019s rhythms and techniques passed down from father to son. Today, as then, every wheel is born from the daily care of the flock, the choice of the best pastures and entirely handcrafted processing." },
+    'tl.1.title':    { it: 'Il Pascolo',       en: 'The Pasture' },
+    'tl.1.text':     { it: 'Le nostre pecore pascolano libere tra i profumi del mirto, del timo e del cisto selvatico a oltre 800 metri sul livello del mare. \u00c8 proprio questo che rende unico il nostro latte.', en: 'Our sheep graze freely among the scents of myrtle, thyme and wild cistus at over 800 metres above sea level. This is exactly what makes our milk unique.' },
+    'tl.2.title':    { it: 'La Metamorfosi',    en: 'The Metamorphosis' },
+    'tl.2.text':     { it: 'Il latte crudo viene scaldato e addizionato con caglio di agnello. La magia inizia: il liquido diventa solido, la materia prende forma tra le mani del casaro.', en: 'The raw milk is heated and combined with lamb rennet. The magic begins: liquid becomes solid, matter takes shape in the cheesemaker\u2019s hands.' },
+    'tl.3.title':    { it: 'La Stagionatura',   en: 'The Ageing' },
+    'tl.3.text':     { it: 'Nelle nostre cantine naturali, il tempo fa il suo lavoro. Settimane, mesi \u2014 ogni giorno il formaggio evolve, matura, si perfeziona. Non abbiamo fretta.', en: 'In our natural cellars, time does its work. Weeks, months \u2014 every day the cheese evolves, matures, perfects itself. We are in no hurry.' },
+    'tl.4.title':    { it: 'La Tavola',         en: 'The Table' },
+    'tl.4.text':     { it: "Il viaggio si compie quando la forma viene aperta e condivisa. Ogni fetta porta con s\u00e9 il profumo dei pascoli, la pazienza della stagionatura e la storia di chi l\u2019ha creata.", en: 'The journey is complete when the wheel is opened and shared. Every slice carries the scent of the pastures, the patience of ageing and the story of those who created it.' },
+    'lana.label':    { it: 'La nostra lana',     en: 'Our wool' },
+    'lana.title':    { it: 'Dal gregge al gomitolo,<br>con colori della terra.', en: 'From the flock to the skein,<br>with colours of the earth.' },
+    'lana.text':     { it: "La lana delle nostre pecore non va sprecata. La raccogliamo, la laviamo e la filiamo a mano, tingendola con pigmenti naturali ricavati da piante e radici del territorio. Ogni gomitolo porta con s\u00e9 i colori della nostra terra: l\u2019ocra della terra, il verde del mirto, il marrone delle castagne.", en: 'The wool of our sheep is never wasted. We collect it, wash it and spin it by hand, dyeing it with natural pigments from local plants and roots. Every skein carries the colours of our land: the ochre of the earth, the green of myrtle, the brown of chestnuts.' },
+    'lana.wa':       { it: 'Chiedi info sulla lana', en: 'Ask about our wool' },
+    'prod.label':    { it: 'I nostri formaggi',  en: 'Our cheeses' },
+    'prod.title':    { it: "Quattordici caratteri,<br>un\u2019unica anima.", en: 'Fourteen characters,<br>one single soul.' },
+    'prod.text':     { it: "Ogni formaggio nasce da un gesto antico e da un latte unico. Dalla ricotta fresca al grande stagionato, ogni forma racconta mesi di cura, pazienza e il carattere inconfondibile dei nostri pascoli.", en: 'Every cheese is born from an ancient gesture and a unique milk. From fresh ricotta to the great aged wheel, every form tells of months of care, patience and the unmistakable character of our pastures.' },
+    'contact.label': { it: 'Contatti',           en: 'Contacts' },
+    'contact.title': { it: 'Vieni a trovarci',   en: 'Come visit us' },
+    'contact.wa':    { it: 'Scrivici su WhatsApp', en: 'Write to us on WhatsApp' },
+    'contact.where': { it: 'Dove siamo',         en: 'Where we are' },
+    'contact.hours': { it: 'Orari',              en: 'Hours' },
+    'contact.monsat':{ it: 'Lun \u2013 Sab',     en: 'Mon \u2013 Sat' },
+    'contact.sun':   { it: 'Domenica',           en: 'Sunday' },
+    'contact.closed':{ it: 'Chiuso',             en: 'Closed' },
+    'footer.tagline':{ it: 'Pecorino artigianale<br>' + CONFIG.luogo, en: 'Artisan pecorino<br>' + CONFIG.luogo },
+    'footer.copy':   { it: '\u00a9 2026 Il Buon Pastore \u2014 Tutti i diritti riservati', en: '\u00a9 2026 Il Buon Pastore \u2014 All rights reserved' }
+  };
+
+  var langPill = $('#lang-pill'),
+      i18nEls = [];
 
   function refreshI18n(){
-    i18n = Array.prototype.slice.call($$('[data-i18n]'));
-    var hs = '';
-    i18n.forEach(function(e){ var k = e.getAttribute('data-i18n'); if(!orig[k]) orig[k] = e.innerHTML; hs += e.textContent });
-    ch = hs.length + '_' + hs.slice(0, 80);
-    uniqueKeys = Object.keys(orig);
-    try {
-      if(localStorage.getItem(LS_HASH) === ch){
-        var raw = JSON.parse(localStorage.getItem(LS_EN) || '{}');
-        Object.keys(raw).forEach(function(k){
-          if(typeof raw[k] === 'string') cache[k] = raw[k];
-        });
-      }
-    } catch(x){}
+    i18nEls = Array.prototype.slice.call($$('[data-i18n]'));
   }
   refreshI18n();
-
-  /* Dominio consentito per le richieste di traduzione (allowlist) */
-  var TRANSLATE_ORIGIN = 'https://api.mymemory.translated.net';
-  var MAX_TRANSLATE_LEN = 500;
-
-  function tr(text){
-    var c = text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
-
-    /* Limita la lunghezza del testo per evitare abusi */
-    if(c.length > MAX_TRANSLATE_LEN) c = c.slice(0, MAX_TRANSLATE_LEN);
-
-    /* Costruisce e valida l'URL contro il dominio consentito */
-    var url = TRANSLATE_ORIGIN + '/get?q=' + encodeURIComponent(c) + '&langpair=it|en';
-    try {
-      var parsed = new URL(url);
-      if(parsed.origin !== TRANSLATE_ORIGIN) return Promise.resolve(text);
-    } catch(e){ return Promise.resolve(text); }
-
-    return fetch(url)
-      .then(function(r){ return r.json() })
-      .then(function(d){
-        if(d.responseStatus === 200 && d.responseData){
-          var r = d.responseData.translatedText;
-          /* Sanitizza il testo tradotto prima di reinserirlo nel DOM */
-          r = esc(r);
-          return text.indexOf('<br') > -1 ? r.replace(/\n/g, '<br>') : r;
-        }
-        return text;
-      })
-      .catch(function(){ return text });
-  }
 
   function apply(l){
     lang = l;
     document.documentElement.lang = l;
-    i18n.forEach(function(e){
+    i18nEls.forEach(function(e){
       var k = e.getAttribute('data-i18n');
-      var val = l === 'en' && cache[k] ? cache[k] : orig[k];
-      if(!val) return;
+      var entry = I18N[k];
+      if(!entry) return;
+      var val = entry[l] || entry.it;
       if(val.indexOf('<') === -1) e.textContent = val;
       else e.innerHTML = val;
     });
-    lb.textContent = l === 'it' ? 'EN' : 'IT';
+    langPill.querySelectorAll('.lang-opt').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-lang') === l);
+    });
     updateDarkLabel();
+    updateLanaWa();
     renderProdotti(l);
     renderLana(l);
   }
 
-  lb.addEventListener('click', function(){
-    if(lang !== 'it'){ apply('it'); return }
-    var todo = uniqueKeys.filter(function(k){ return !cache[k] });
-    if(!todo.length){ apply('en'); return }
-    lb.textContent = '...'; lb.disabled = true;
-    var BATCH = 5;
-    function processBatch(idx){
-      var batch = todo.slice(idx, idx + BATCH);
-      if(!batch.length){
-        try { localStorage.setItem(LS_EN, JSON.stringify(cache)); localStorage.setItem(LS_HASH, ch) } catch(x){}
-        lb.disabled = false;
-        apply('en');
-        return;
-      }
-      Promise.all(batch.map(function(k){ return tr(orig[k]).then(function(t){ cache[k] = t }) }))
-        .then(function(){ processBatch(idx + BATCH) })
-        .catch(function(){ lb.disabled = false; apply('it') });
-    }
-    processBatch(0);
+  langPill.addEventListener('click', function(e){
+    var btn = e.target.closest('.lang-opt');
+    if(!btn || btn.classList.contains('active')) return;
+    apply(btn.getAttribute('data-lang'));
   });
 
   /* ── SCROLL TO TOP ── */
@@ -907,7 +859,7 @@
 
   /* ── NAV ACTIVE LINK ── */
   var navLinksA = $$('.nav-links a');
-  var navSections = ['timeline','lana','prodotti','contatti'].map(function(id){ return document.getElementById(id) }).filter(Boolean);
+  var navSections = ['timeline','lana','formaggi','contatti'].map(function(id){ return document.getElementById(id) }).filter(Boolean);
   var navSecObs = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
       if(entry.isIntersecting){
@@ -954,6 +906,19 @@
     });
   }, { threshold: .05 });
   if(prodList) staggerObs.observe(prodList);
+
+  /* ── TOGGLE dettagli formaggi ── */
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.prodotto-toggle');
+    if(!btn) return;
+    var extra = btn.nextElementSibling;
+    if(!extra || !extra.classList.contains('prodotto-extra')) return;
+    var open = extra.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    var icon = btn.querySelector('.prodotto-toggle-icon');
+    if(icon) icon.textContent = open ? '\u2039' : '\u203A';
+    btn.childNodes[0].textContent = open ? lbl('lessDetails') + ' ' : lbl('moreDetails') + ' ';
+  });
 
   /* ══════════════════════════════════════════════════════════════════
      CARRELLO — Modulo rimovibile
@@ -1008,8 +973,8 @@
     /* ── Parsing chiave carrello ── */
     function parseCartKey(key){
       var p = key.split('|');
-      var detail = p.length === 3 ? p[1] + ', ' + p[2] : p[1];
-      return { name: p[0], detail: detail, display: p[0] + ' (' + detail + ')' };
+      var detail = p.length === 3 ? p[1] + ', ' + p[2] : (p[1] || '');
+      return { name: p[0], detail: detail, display: p[0] + (detail ? ' (' + detail + ')' : '') };
     }
 
     function lineTotal(item){ return Math.round(item.price * item.qty * 100) / 100; }
@@ -1057,6 +1022,41 @@
       }
       var sendSvg = sendBtn.querySelector('svg');
       sendBtn.innerHTML = (sendSvg ? sendSvg.outerHTML + ' ' : '') + ct('sendWa');
+      if(formReset) formReset.setAttribute('aria-label', lang === 'en' ? 'Reset form' : 'Resetta dettagli');
+    }
+
+    function updateBadges(tot){
+      badge.textContent = tot;
+      badge.classList.toggle('visible', tot > 0);
+      if(fab){
+        fabBadge.textContent = tot;
+        fab.classList.toggle('visible', tot > 0);
+        fab.setAttribute('aria-hidden', tot > 0 ? 'false' : 'true');
+      }
+      footer.classList.toggle('visible', tot > 0);
+    }
+
+    function getMissingField(){
+      return !fNome.value.trim() ? 'needName'
+        : !fData.value ? 'needDate'
+        : (deliveryMode === 'address' && !fAddr.value.trim()) ? 'needAddr'
+        : '';
+    }
+
+    function buildWaMsg(keys, totalPrice){
+      var msg = ct('orderHdr');
+      keys.forEach(function(key){
+        var ck = parseCartKey(key);
+        msg += '\u2022 ' + ck.name + ' (' + ck.detail + ') x' + cart[key].qty;
+        if(cart[key].price > 0) msg += ' \u2014 \u20ac' + lineTotal(cart[key]).toFixed(2);
+        msg += '\n';
+      });
+      if(totalPrice > 0) msg += ct('totalWa') + '\u20ac' + totalPrice.toFixed(2);
+      if(fNome.value.trim()) msg += '\n' + ct('name') + fNome.value.trim();
+      if(fData.value) msg += '\n' + ct('date') + fData.value;
+      if(deliveryMode === 'pickup') msg += '\n' + ct('pickup');
+      else if(fAddr.value.trim()) msg += '\n' + ct('address') + fAddr.value.trim();
+      return msg;
     }
 
     function renderDrawer(){
@@ -1064,21 +1064,8 @@
       var tot = keys.reduce(function(s, k){ return s + cart[k].qty }, 0);
       var totalPrice = keys.reduce(function(s, k){ return s + Math.round(cart[k].qty * cart[k].price * 100) }, 0) / 100;
 
-      /* Badge */
-      badge.textContent = tot;
-      badge.classList.toggle('visible', tot > 0);
+      updateBadges(tot);
 
-      /* FAB */
-      if(fab){
-        fabBadge.textContent = tot;
-        fab.classList.toggle('visible', tot > 0);
-        fab.setAttribute('aria-hidden', tot > 0 ? 'false' : 'true');
-      }
-
-      /* Footer */
-      footer.classList.toggle('visible', tot > 0);
-
-      /* Body */
       if(!keys.length){
         body.innerHTML = '<p class="cart-empty">' + ct('empty') + '</p>';
         sendBtn.href = '#';
@@ -1106,7 +1093,6 @@
       }
       body.innerHTML = html;
 
-      /* Bottone svuota in fondo alla lista */
       var clearBtn = document.createElement('button');
       clearBtn.className = 'cart-clear';
       clearBtn.type = 'button';
@@ -1114,28 +1100,7 @@
       clearBtn.addEventListener('click', function(){ cart = {}; save(); renderDrawer(); refreshAddBtns(); });
       body.appendChild(clearBtn);
 
-      /* Link WhatsApp */
-      var msg = ct('orderHdr');
-      keys.forEach(function(key){
-        var ck = parseCartKey(key);
-        msg += '\u2022 ' + ck.name + ' (' + ck.detail + ') x' + cart[key].qty;
-        if(cart[key].price > 0) msg += ' \u2014 \u20ac' + lineTotal(cart[key]).toFixed(2);
-        msg += '\n';
-      });
-      if(totalPrice > 0) msg += ct('totalWa') + '\u20ac' + totalPrice.toFixed(2);
-      if(fNome.value.trim()) msg += '\n' + ct('name') + fNome.value.trim();
-      if(fData.value) msg += '\n' + ct('date') + fData.value;
-      if(deliveryMode === 'pickup'){
-        msg += '\n' + ct('pickup');
-      } else if(fAddr.value.trim()){
-        msg += '\n' + ct('address') + fAddr.value.trim();
-      }
-      /* Validazione campi obbligatori */
-      var missingField = !fNome.value.trim() ? 'needName'
-        : !fData.value ? 'needDate'
-        : (deliveryMode === 'address' && !fAddr.value.trim()) ? 'needAddr'
-        : '';
-      if(missingField){
+      if(getMissingField()){
         sendBtn.href = '#';
         sendBtn.classList.add('cart-send-disabled');
         updateCartLang();
@@ -1143,7 +1108,7 @@
       }
       sendBtn.classList.remove('cart-send-disabled');
 
-      var waUrl = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(msg);
+      var waUrl = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(buildWaMsg(keys, totalPrice));
       if(waUrl.length > MAX_WA_URL_LEN){
         showToast(ct('tooLong'));
         sendBtn.href = '#';
@@ -1191,11 +1156,8 @@
     sendBtn.addEventListener('click', function(e){
       if(sendBtn.getAttribute('href') === '#'){
         e.preventDefault();
-        var vMsg = !fNome.value.trim() ? ct('needName')
-          : !fData.value ? ct('needDate')
-          : (deliveryMode === 'address' && !fAddr.value.trim()) ? ct('needAddr')
-          : '';
-        if(vMsg) showToast(vMsg);
+        var missing = getMissingField();
+        if(missing) showToast(ct(missing));
         return;
       }
       setTimeout(function(){
@@ -1309,9 +1271,9 @@
       if(updated){ save(); renderDrawer(); }
     }
 
-    document.addEventListener('prodotti-ready', function(){ injectAddBtns(); syncPrices(); });
+    document.addEventListener('formaggi-ready', function(){ injectAddBtns(); syncPrices(); });
     document.addEventListener('lana-ready', function(){ injectAddBtns(lanaList); syncPrices(); });
-    document.addEventListener('prodotti-rerender', function(){ injectAddBtns(); });
+    document.addEventListener('formaggi-rerender', function(){ injectAddBtns(); });
     document.addEventListener('lana-rerender', function(){ injectAddBtns(lanaList); });
 
     /* Aggiorna link WA quando i campi cambiano */
